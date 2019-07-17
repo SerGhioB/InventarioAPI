@@ -37,6 +37,7 @@ namespace InventarioAPI
                 options.CreateMap<TipoEmpaqueCreacionDTO, TipoEmpaque>();
                 options.CreateMap<InventarioCreacionDTO, Inventario>();
                 options.CreateMap<ProductoCreacionDTO, Producto>();
+                options.CreateMap<DetalleCompraCreacionDTO, DetalleCompra>();
             });
             //services.AddAutoMapper(options => {options.CreateMap<TipoEmpaqueCreacionDTO, TipoEmpaque>();});
             //services.AddAutoMapper(options => {options.CreateMap<InventarioCreacionDTO, Inventario>();});
