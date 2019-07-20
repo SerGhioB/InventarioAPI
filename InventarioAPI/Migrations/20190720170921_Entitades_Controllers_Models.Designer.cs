@@ -4,14 +4,16 @@ using InventarioAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InventarioAPI.Migrations
 {
     [DbContext(typeof(InventarioDBContext))]
-    partial class InventarioDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190720170921_Entitades_Controllers_Models")]
+    partial class Entitades_Controllers_Models
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

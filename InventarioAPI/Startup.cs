@@ -38,6 +38,16 @@ namespace InventarioAPI
                 options.CreateMap<InventarioCreacionDTO, Inventario>();
                 options.CreateMap<ProductoCreacionDTO, Producto>();
                 options.CreateMap<DetalleCompraCreacionDTO, DetalleCompra>();
+                options.CreateMap<DetalleFacturaCreacionDTO, DetalleFactura>();
+                options.CreateMap<EmailProveedorCreacionDTO, EmailProveedor>();
+                options.CreateMap<CompraCreacionDTO, Compra>();
+                options.CreateMap<FacturaDTO, Factura>();
+                options.CreateMap<ProveedorDTO, Proveedor>();
+                options.CreateMap<ClienteDTO, Cliente>();
+                options.CreateMap<TelefonoProveedorDTO, TelefonoProveedor>();
+                options.CreateMap<EmailClienteDTO, EmailCliente>();
+                options.CreateMap<TelefonoClienteDTO, TelefonoCliente>();
+
             });
             //services.AddAutoMapper(options => {options.CreateMap<TipoEmpaqueCreacionDTO, TipoEmpaque>();});
             //services.AddAutoMapper(options => {options.CreateMap<InventarioCreacionDTO, Inventario>();});
