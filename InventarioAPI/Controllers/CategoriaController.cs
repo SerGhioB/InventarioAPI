@@ -23,7 +23,6 @@ namespace InventarioAPI.Controllers
         {
             this.contexto = contexto;
             this.mapper = mapper;
-
         }
 
         [HttpGet]
@@ -44,8 +43,7 @@ namespace InventarioAPI.Controllers
                 return NotFound();
             }
             var categoriaDTO = mapper.Map<CategoriaDTO>(categoria);
-            return categoriaDTO;
-            
+            return categoriaDTO;            
         }
 
         [HttpPost]
