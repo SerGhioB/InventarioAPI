@@ -22,7 +22,6 @@ namespace InventarioAPI.Controllers
         {
             this.contexto = contexto;
             this.mapper = mapper;
-
         }
 
         [HttpGet]
@@ -44,7 +43,6 @@ namespace InventarioAPI.Controllers
             }
             var emailclienteDTO = mapper.Map<EmailClienteDTO>(emailcliente);
             return emailclienteDTO;
-
         }
 
         [HttpPost]

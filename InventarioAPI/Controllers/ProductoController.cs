@@ -54,6 +54,5 @@ namespace InventarioAPI.Controllers
             var productoDTO = mapper.Map<ProductoDTO>(producto);
             return new CreatedAtRouteResult("GetProducto", new { id = producto.CodigoProducto }, productoDTO);
         }
-
     }
 }
