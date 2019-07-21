@@ -22,5 +22,9 @@ namespace InventarioAPI.Entities
         [Required]
         public Decimal Precio { get; set; }
 
+        public virtual Producto Producto { get; set; }
+
+        public virtual Compra Compras { get; set; }
+
     }
 }

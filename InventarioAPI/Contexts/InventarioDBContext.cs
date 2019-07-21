@@ -49,7 +49,7 @@ namespace InventarioAPI.Contexts
 
             modelBuilder.Entity<DetalleCompra>()
                 .ToTable("DetalleCompra")
-                .HasKey(key => key.IdCompra);
+                .HasKey(key => key.IdDetalle);
 
             modelBuilder.Entity<DetalleFactura>()
                 .ToTable("DetalleFactura")

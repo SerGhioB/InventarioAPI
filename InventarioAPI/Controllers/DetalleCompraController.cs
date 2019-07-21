@@ -52,14 +52,14 @@ namespace InventarioAPI.Controllers
             contexto.Add(detallecompra);
             await contexto.SaveChangesAsync();
             var detallecompraDTO = mapper.Map<DetalleCompraDTO>(detallecompra);
-            return new CreatedAtRouteResult("GetDetalleCompra", new { id = detallecompra.IdCompra }, detallecompraDTO);
+            return new CreatedAtRouteResult("GetDetalleCompra", new { id = detallecompra.IdDetalle }, detallecompraDTO);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] DetalleCompraCreacionDTO detallecompraActualizacion)
         {
             var detallecompra = mapper.Map<DetalleCompra>(detallecompraActualizacion);
-            detallecompra.IdCompra = id;
+            detallecompra.IdDetalle = id;
             contexto.Entry(detallecompra).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
@@ -68,12 +68,12 @@ namespace InventarioAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<DetalleCompraDTO>> Delete(int id)
         {
-            var codigoDetalleCompra = await contexto.DetalleCompras.Select(x => x.IdCompra).FirstOrDefaultAsync(x => x == id);
+            var codigoDetalleCompra = await contexto.DetalleCompras.Select(x => x.IdDetalle).FirstOrDefaultAsync(x => x == id);
             if (codigoDetalleCompra == default(int))
             {
                 return NotFound();
             }
-            contexto.Remove(new DetalleCompra { IdCompra = id });
+            contexto.Remove(new DetalleCompra { IdDetalle = id });
             await contexto.SaveChangesAsync();
             return NotFound();
         }

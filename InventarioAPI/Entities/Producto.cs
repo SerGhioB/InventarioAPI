@@ -40,6 +40,10 @@ namespace InventarioAPI.Entities
 
         public virtual ICollection<Inventario> Inventarios { get; set; }
 
+        public virtual ICollection<DetalleCompra> DetalleCompras { get; set; }
+
+        public virtual ICollection<DetalleFactura> DetalleFacturas { get; set; }
+
 
 
     }

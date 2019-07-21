@@ -23,5 +23,7 @@ namespace InventarioAPI.Entities
         public Decimal Total { get; set; }
 
         public virtual Proveedor Proveedor { get; set; }
+
+        public virtual ICollection<DetalleCompra> DetalleCompras { get; set; }
     }
 }
