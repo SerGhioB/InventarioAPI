@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventarioAPI.Migrations
 {
     [DbContext(typeof(InventarioDBContext))]
-    [Migration("20190720170921_Entitades_Controllers_Models")]
-    partial class Entitades_Controllers_Models
+    [Migration("20190721171841_Componentes_DB")]
+    partial class Componentes_DB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -77,7 +77,7 @@ namespace InventarioAPI.Migrations
 
             modelBuilder.Entity("InventarioAPI.Entities.DetalleCompra", b =>
                 {
-                    b.Property<int>("IdCompra")
+                    b.Property<int>("IdDetalle")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -85,11 +85,15 @@ namespace InventarioAPI.Migrations
 
                     b.Property<int>("CodigoProducto");
 
-                    b.Property<int>("IdDetalle");
+                    b.Property<int>("IdCompra");
 
                     b.Property<decimal>("Precio");
 
-                    b.HasKey("IdCompra");
+                    b.HasKey("IdDetalle");
+
+                    b.HasIndex("CodigoProducto");
+
+                    b.HasIndex("IdCompra");
 
                     b.ToTable("DetalleCompra");
                 });
@@ -326,10 +330,23 @@ namespace InventarioAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("InventarioAPI.Entities.DetalleCompra", b =>
+                {
+                    b.HasOne("InventarioAPI.Entities.Producto", "Producto")
+                        .WithMany("DetalleCompras")
+                        .HasForeignKey("CodigoProducto")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("InventarioAPI.Entities.Compra", "Compras")
+                        .WithMany("DetalleCompras")
+                        .HasForeignKey("IdCompra")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("InventarioAPI.Entities.DetalleFactura", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Producto", "Producto")
-                        .WithMany()
+                        .WithMany("DetalleFacturas")
                         .HasForeignKey("CodigoProducto")
                         .OnDelete(DeleteBehavior.Cascade);
 

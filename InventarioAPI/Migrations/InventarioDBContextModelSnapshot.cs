@@ -75,7 +75,7 @@ namespace InventarioAPI.Migrations
 
             modelBuilder.Entity("InventarioAPI.Entities.DetalleCompra", b =>
                 {
-                    b.Property<int>("IdCompra")
+                    b.Property<int>("IdDetalle")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -83,11 +83,15 @@ namespace InventarioAPI.Migrations
 
                     b.Property<int>("CodigoProducto");
 
-                    b.Property<int>("IdDetalle");
+                    b.Property<int>("IdCompra");
 
                     b.Property<decimal>("Precio");
 
-                    b.HasKey("IdCompra");
+                    b.HasKey("IdDetalle");
+
+                    b.HasIndex("CodigoProducto");
+
+                    b.HasIndex("IdCompra");
 
                     b.ToTable("DetalleCompra");
                 });
@@ -324,10 +328,23 @@ namespace InventarioAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("InventarioAPI.Entities.DetalleCompra", b =>
+                {
+                    b.HasOne("InventarioAPI.Entities.Producto", "Producto")
+                        .WithMany("DetalleCompras")
+                        .HasForeignKey("CodigoProducto")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("InventarioAPI.Entities.Compra", "Compras")
+                        .WithMany("DetalleCompras")
+                        .HasForeignKey("IdCompra")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("InventarioAPI.Entities.DetalleFactura", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Producto", "Producto")
-                        .WithMany()
+                        .WithMany("DetalleFacturas")
                         .HasForeignKey("CodigoProducto")
                         .OnDelete(DeleteBehavior.Cascade);
 
