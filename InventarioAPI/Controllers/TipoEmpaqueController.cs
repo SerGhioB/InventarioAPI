@@ -43,7 +43,7 @@ namespace InventarioAPI.Controllers
         [HttpGet("{id}", Name = "GetTipoEmpaque")]
         public async Task<ActionResult<TipoEmpaqueDTO>> Get(int id)
         {
-            var tipoempaque = await contexto.TipoEmpaques.FirstOrDefaultAsync(x => x.CodigoEmpaque == id);
+            var tipoempaque = await contexto.TipoEmpaques.FirstOrDefaultAsync(x => x.codigoEmpaque == id);
             if (tipoempaque == null)
             {
                 return NotFound();
@@ -60,14 +60,14 @@ namespace InventarioAPI.Controllers
             contexto.Add(tipoempaque);
             await contexto.SaveChangesAsync();
             var tipoempaqueDTO = mapper.Map<TipoEmpaqueDTO>(tipoempaque);
-            return new CreatedAtRouteResult("GetTipoEmpaque", new { id = tipoempaque.CodigoEmpaque }, tipoempaqueDTO);
+            return new CreatedAtRouteResult("GetTipoEmpaque", new { id = tipoempaque.codigoEmpaque }, tipoempaqueDTO);
         }
 
         [HttpPut ("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] TipoEmpaqueCreacionDTO tipoEmpaqueActualizacion)
         {
             var tipoempaque = mapper.Map<TipoEmpaque>(tipoEmpaqueActualizacion);
-            tipoempaque.CodigoEmpaque = id;
+            tipoempaque.codigoEmpaque = id;
             contexto.Entry(tipoempaque).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
@@ -76,12 +76,12 @@ namespace InventarioAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<TipoEmpaqueDTO>> Delete(int id)
         {
-            var tipoEmpaque = await contexto.TipoEmpaques.Select(x => x.CodigoEmpaque).FirstOrDefaultAsync(x => x == id);
+            var tipoEmpaque = await contexto.TipoEmpaques.Select(x => x.codigoEmpaque).FirstOrDefaultAsync(x => x == id);
             if (tipoEmpaque == default(int))
             {
                 return NotFound();
             }
-            contexto.Remove(new TipoEmpaque { CodigoEmpaque = id });
+            contexto.Remove(new TipoEmpaque { codigoEmpaque = id });
             await contexto.SaveChangesAsync();
             return NotFound();
         }

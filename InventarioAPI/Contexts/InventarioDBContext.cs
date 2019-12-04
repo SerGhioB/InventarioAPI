@@ -4,11 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InventarioAPI.Contexts
 {
     public class InventarioDBContext : DbContext
     {
+        #region tablas
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<TipoEmpaque> TipoEmpaques { get; set; }
         public DbSet<Inventario> Inventarios { get; set; }
@@ -23,6 +25,7 @@ namespace InventarioAPI.Contexts
         public DbSet<TelefonoProveedor> TelefonoProveedores { get; set; }
         public DbSet<EmailCliente> EmailClientes { get; set; }
         public DbSet<TelefonoCliente> TelefonoClientes { get; set; }
+        #endregion 
 
         public InventarioDBContext(DbContextOptions<InventarioDBContext> options) : base(options)
         {

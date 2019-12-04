@@ -31,7 +31,7 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductoDTO>>> Get()
         {
-            var producto = await contexto.Productos.ToListAsync();
+            var producto = await contexto.Productos.Include("Categoria").Include("TipoEmpaque").ToListAsync();
             var productosDTO = mapper.Map<List<ProductoDTO>>(producto);
             return productosDTO;
         }
@@ -39,7 +39,7 @@ namespace InventarioAPI.Controllers
         [HttpGet("{id}", Name = "GetProducto")]
         public async Task<ActionResult<ProductoDTO>> Get(int id)
         {
-            var producto = await contexto.Productos.FirstOrDefaultAsync(x => x.CodigoProducto == id);
+            var producto = await contexto.Productos.FirstOrDefaultAsync(x => x.codigoProducto == id);
             if (producto == null)
             {
                 return NotFound();
@@ -55,7 +55,7 @@ namespace InventarioAPI.Controllers
             contexto.Add(producto);
             await contexto.SaveChangesAsync();
             var productoDTO = mapper.Map<ProductoDTO>(producto);
-            return new CreatedAtRouteResult("GetProducto", new { id = producto.CodigoProducto }, productoDTO);
+            return new CreatedAtRouteResult("GetProducto", new { id = producto.codigoProducto }, productoDTO);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace InventarioAPI.Controllers
         private readonly InventarioDBContext contexto;
         private readonly IMapper mapper;
 
-        public DetalleCompraController (InventarioDBContext context, IMapper mapper)
+        public DetalleCompraController (InventarioDBContext contexto, IMapper mapper)
         {
             this.contexto = contexto;
             this.mapper = mapper;
@@ -31,39 +31,70 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DetalleCompraDTO>>> Get()
         {
-            var detallecompras = await contexto.DetalleCompras.ToListAsync();
+            var detallecompras = await contexto.DetalleCompras.Include("Compra").Include("Producto").ToListAsync();            
             var detallecomprasDTO = mapper.Map<List<DetalleCompraDTO>>(detallecompras);
             return detallecomprasDTO;
         }
 
-        [HttpGet("{id}", Name = "GetDetalleCompra")]        
-        public async Task<ActionResult<DetalleCompraDTO>> Get (int id)
+        [HttpGet("{numeroDePagina}", Name = "GetDetalleCompraPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<DetalleCompraPaginacionDTO>> GetDetalleCompraPage(int numeroDePagina = 0)
         {
-            var detallecompra = await contexto.DetalleCompras.FirstOrDefaultAsync(x => x.IdDetalle == id);
-            if(detallecompra == null)
+            int cantidadDeRegistros = 5;
+            var detalleCompraPaginacionDTO = new DetalleCompraPaginacionDTO();
+            var query = contexto.DetalleCompras.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            detalleCompraPaginacionDTO.Number = numeroDePagina;
+
+            var detalleCompras = await contexto.DetalleCompras
+                .Skip(cantidadDeRegistros * (detalleCompraPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            detalleCompraPaginacionDTO.TotalPages = totalPaginas;
+            detalleCompraPaginacionDTO.Content = mapper.Map<List<DetalleCompraDTO>>(detalleCompras);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                detalleCompraPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                detalleCompraPaginacionDTO.Last = true;
+            }
+            return detalleCompraPaginacionDTO;
+        }
+
+        [HttpGet("{id}", Name = "GetDetalleCompra")]        
+        public async Task<ActionResult<DetalleCompraDTO>> GetDetalleCompra (int id)
+        {
+            var detalleCompra = await contexto.DetalleCompras.FirstOrDefaultAsync(x => x.IdDetalle == id);
+            if(detalleCompra == null)
             {
                 return NotFound();
             }
-            var detallecompraDTO = mapper.Map < DetalleCompraDTO>(detallecompra);
-            return detallecompraDTO;
+            var detalleCompraDTO = mapper.Map < DetalleCompraDTO>(detalleCompra);
+            return detalleCompraDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] DetalleCompraCreacionDTO detallecompraCreacion)
+        public async Task<ActionResult> Post([FromBody] DetalleCompraCreacionDTO detalleCompraCreacion)
         {
-            var detallecompra = mapper.Map<DetalleCompra>(detallecompraCreacion);
-            contexto.Add(detallecompra);
+            var detalleCompra = mapper.Map<DetalleCompra>(detalleCompraCreacion);
+            contexto.Add(detalleCompra);
             await contexto.SaveChangesAsync();
-            var detallecompraDTO = mapper.Map<DetalleCompraDTO>(detallecompra);
-            return new CreatedAtRouteResult("GetDetalleCompra", new { id = detallecompra.IdDetalle }, detallecompraDTO);
+            var detalleCompraDTO = mapper.Map<DetalleCompraDTO>(detalleCompra);
+            return new CreatedAtRouteResult("GetDetalleCompra", new { id = detalleCompra.IdDetalle }, detalleCompraDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] DetalleCompraCreacionDTO detallecompraActualizacion)
+        public async Task<ActionResult> Put(int id, [FromBody] DetalleCompraCreacionDTO detalleCompraActualizacion)
         {
-            var detallecompra = mapper.Map<DetalleCompra>(detallecompraActualizacion);
-            detallecompra.IdDetalle = id;
-            contexto.Entry(detallecompra).State = EntityState.Modified;
+            var detalleCompra = mapper.Map<DetalleCompra>(detalleCompraActualizacion);
+            detalleCompra.IdDetalle = id;
+            contexto.Entry(detalleCompra).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
         }
@@ -78,7 +109,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new DetalleCompra { IdDetalle = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
 
 

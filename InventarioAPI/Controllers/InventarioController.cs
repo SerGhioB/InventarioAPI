@@ -30,7 +30,7 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventarioDTO>>> Get()
         {
-            var inventarios = await contexto.Inventarios.ToListAsync();
+            var inventarios = await contexto.Inventarios.Include("Producto").ToListAsync();            
             var inventariosDTO = mapper.Map<List<InventarioDTO>>(inventarios);
             return inventariosDTO;
         }

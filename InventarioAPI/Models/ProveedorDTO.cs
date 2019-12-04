@@ -24,5 +24,7 @@ namespace InventarioAPI.Models
 
         [Required]
         public string ContactoPrincipal { get; set; }
+
+        public List<CompraDTO> Compras { get; set; }
     }
 }

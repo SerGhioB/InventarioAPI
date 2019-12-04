@@ -9,10 +9,10 @@ namespace InventarioAPI.Models
     public class CategoriaDTO
     {
 
-        public int CodigoCategoria { get; set; }
+        public int codigoCategoria { get; set; }
 
         [Required]
-        public string Descripcion { get; set; }
+        public string descripcion { get; set; }
 
     }
 }

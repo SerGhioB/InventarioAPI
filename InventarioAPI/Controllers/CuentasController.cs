@@ -32,7 +32,6 @@ namespace InventarioAPI.Controllers
             this._configuration = configuration;
         }
 
-
         //Metodo para crear un usuario
         [HttpPost("crear")]
 
@@ -46,15 +45,15 @@ namespace InventarioAPI.Controllers
             }
             else
             {
-                return BadRequest("User name o Password Invalido");
+                return BadRequest("Username o Password Invalido");
             }
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserToken>> Login ( [FromBody] UserInfo userInfo)
+        public async Task<ActionResult<UserToken>> Login([FromBody] UserInfo userInfo)
         {
             var result = await _signManager.PasswordSignInAsync(userInfo.Email, userInfo.Password, isPersistent: false, lockoutOnFailure: false);
-            if( result.Succeeded)
+            if (result.Succeeded)
             {
                 return BuildToken(userInfo);
             }

@@ -35,9 +35,37 @@ namespace InventarioAPI.Controllers
             return clientesDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetClientePage")]
+        [Route("{page/numeroDePagina}")]
+        public async Task<ActionResult<ClientePaginacionDTO>> GetClientePage(int  numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var clientePaginacionDTO = new ClientePaginacionDTO();
+            var query = contexto.Clientes.AsQueryable();
+            int totalDeRegistros = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            clientePaginacionDTO.Number = numeroDePagina;
+
+            var clientes = await contexto.Clientes
+                .Skip(cantidadDeRegistros * (clientePaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync();
+
+            clientePaginacionDTO.TotalPages = totalDeRegistros;
+            clientePaginacionDTO.Content = mapper.Map<List<ClienteDTO>>(clientes);
+
+            if (numeroDePagina == 0)
+            {
+                clientePaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                clientePaginacionDTO.Last = true;
+            }
+            return clientePaginacionDTO;
+        }
 
         [HttpGet("{id}", Name = "GetCliente")]
-        public async Task<ActionResult<ClienteDTO>> Get(string id)
+        public async Task<ActionResult<ClienteDTO>> GetCliente(string id)
         {
             var cliente = await contexto.Clientes.FirstOrDefaultAsync(x => x.Nit == id);
             if (cliente == null)
@@ -46,7 +74,6 @@ namespace InventarioAPI.Controllers
             }
             var clienteDTO = mapper.Map<ClienteDTO>(cliente);
             return clienteDTO;
-
         }
 
         [HttpPost]
@@ -79,7 +106,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new Cliente { Nit = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
 
     }

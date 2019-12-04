@@ -24,6 +24,6 @@ namespace InventarioAPI.Entities
 
         public virtual Proveedor Proveedor { get; set; }
 
-        public virtual ICollection<DetalleCompra> DetalleCompras { get; set; }
+        public virtual ICollection<DetalleCompra> DetalleCompra { get; set; }
     }
 }

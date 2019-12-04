@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventarioAPI.Migrations
 {
     [DbContext(typeof(InventarioDBContext))]
-    [Migration("20190721171841_Componentes_DB")]
-    partial class Componentes_DB
+    [Migration("20190928160256_Inventario_db")]
+    partial class Inventario_db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,14 +23,14 @@ namespace InventarioAPI.Migrations
 
             modelBuilder.Entity("InventarioAPI.Entities.Categoria", b =>
                 {
-                    b.Property<int>("CodigoCategoria")
+                    b.Property<int>("codigoCategoria")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("descripcion")
                         .IsRequired();
 
-                    b.HasKey("CodigoCategoria");
+                    b.HasKey("codigoCategoria");
 
                     b.ToTable("Categoria");
                 });
@@ -208,33 +208,33 @@ namespace InventarioAPI.Migrations
 
             modelBuilder.Entity("InventarioAPI.Entities.Producto", b =>
                 {
-                    b.Property<int>("CodigoProducto")
+                    b.Property<int>("codigoProducto")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CodigoCategoria");
+                    b.Property<int>("codigoCategoria");
 
-                    b.Property<int>("CodigoEmpaque");
+                    b.Property<int>("codigoEmpaque");
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("descripcion")
                         .IsRequired();
 
-                    b.Property<int>("Existencia");
+                    b.Property<int>("existencia");
 
-                    b.Property<string>("Imagen")
+                    b.Property<string>("imagen")
                         .IsRequired();
 
-                    b.Property<decimal>("PrecioPorDocena");
+                    b.Property<decimal>("precioPorDocena");
 
-                    b.Property<decimal>("PrecioPorMayor");
+                    b.Property<decimal>("precioPorMayor");
 
-                    b.Property<decimal>("PrecioUnitario");
+                    b.Property<decimal>("precioUnitario");
 
-                    b.HasKey("CodigoProducto");
+                    b.HasKey("codigoProducto");
 
-                    b.HasIndex("CodigoCategoria");
+                    b.HasIndex("codigoCategoria");
 
-                    b.HasIndex("CodigoEmpaque");
+                    b.HasIndex("codigoEmpaque");
 
                     b.ToTable("Producto");
                 });
@@ -310,14 +310,14 @@ namespace InventarioAPI.Migrations
 
             modelBuilder.Entity("InventarioAPI.Entities.TipoEmpaque", b =>
                 {
-                    b.Property<int>("CodigoEmpaque")
+                    b.Property<int>("codigoEmpaque")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("descripcion")
                         .IsRequired();
 
-                    b.HasKey("CodigoEmpaque");
+                    b.HasKey("codigoEmpaque");
 
                     b.ToTable("TipoEmpaque");
                 });
@@ -333,7 +333,7 @@ namespace InventarioAPI.Migrations
             modelBuilder.Entity("InventarioAPI.Entities.DetalleCompra", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Producto", "Producto")
-                        .WithMany("DetalleCompras")
+                        .WithMany()
                         .HasForeignKey("CodigoProducto")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -346,7 +346,7 @@ namespace InventarioAPI.Migrations
             modelBuilder.Entity("InventarioAPI.Entities.DetalleFactura", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Producto", "Producto")
-                        .WithMany("DetalleFacturas")
+                        .WithMany()
                         .HasForeignKey("CodigoProducto")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -383,7 +383,7 @@ namespace InventarioAPI.Migrations
             modelBuilder.Entity("InventarioAPI.Entities.Inventario", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Producto", "Producto")
-                        .WithMany("Inventarios")
+                        .WithMany()
                         .HasForeignKey("CodigoProducto")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -391,13 +391,13 @@ namespace InventarioAPI.Migrations
             modelBuilder.Entity("InventarioAPI.Entities.Producto", b =>
                 {
                     b.HasOne("InventarioAPI.Entities.Categoria", "Categoria")
-                        .WithMany("Productos")
-                        .HasForeignKey("CodigoCategoria")
+                        .WithMany()
+                        .HasForeignKey("codigoCategoria")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("InventarioAPI.Entities.TipoEmpaque", "TipoEmpaque")
-                        .WithMany("Productos")
-                        .HasForeignKey("CodigoEmpaque")
+                        .WithMany()
+                        .HasForeignKey("codigoEmpaque")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

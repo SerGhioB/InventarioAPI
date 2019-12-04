@@ -14,8 +14,5 @@ namespace InventarioAPI.Entities
         [Required]
         public string Descripcion { get; set; }
 
-        //public List<Producto> Productos { get; set; }
-
-        public virtual ICollection<Producto> Productos { get; set; }
     }
 }

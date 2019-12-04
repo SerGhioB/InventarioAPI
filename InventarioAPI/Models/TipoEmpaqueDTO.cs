@@ -8,9 +8,9 @@ namespace InventarioAPI.Models
 {
     public class TipoEmpaqueDTO
     {
-        public int CodigoEmpaque { get; set; }
+        public int codigoEmpaque { get; set; }
 
         [Required]
-        public string Descripcion { get; set; }
+        public string descripcion { get; set; }
     }
 }

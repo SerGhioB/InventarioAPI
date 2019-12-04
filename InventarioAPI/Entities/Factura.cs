@@ -19,7 +19,7 @@ namespace InventarioAPI.Entities
         [Required]
         public Decimal Total { get; set; }
 
-        public virtual ICollection<DetalleFactura> DetalleFacturas { get; set; }
+        public virtual ICollection<DetalleFactura> DetalleFactura { get; set; }
 
         public virtual Cliente Cliente { get; set; }
     }

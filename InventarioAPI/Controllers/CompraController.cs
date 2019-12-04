@@ -31,13 +31,44 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompraDTO>>> Get()
         {
-            var compras = await contexto.Compras.ToListAsync(); //conexion a la bd y se extrae 
+            var compras = await contexto.Compras.Include("Proveedor").ToListAsync(); //conexion a la bd y se extrae 
             var comprasDTO = mapper.Map<List<CompraDTO>>(compras); //mapeo entre el objeto "categorias y CategoriaDTO
             return comprasDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetCompraPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<CompraPaginacionDTO>> GetCompraPage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var compraPaginacionDTO = new CompraPaginacionDTO();
+            var query = contexto.Compras.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            compraPaginacionDTO.Number = numeroDePagina;
+
+            var compras = await contexto.Compras
+                .Skip(cantidadDeRegistros * (compraPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            compraPaginacionDTO.TotalPages = totalPaginas;
+            compraPaginacionDTO.Content = mapper.Map<List<CompraDTO>>(compras);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                compraPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                compraPaginacionDTO.Last = true;
+            }
+            return compraPaginacionDTO;
+        }
+
         [HttpGet("{id}", Name = "GetCompra")]
-        public async Task<ActionResult<CompraDTO>> Get(int id)
+        public async Task<ActionResult<CompraDTO>> GetCompra(int id)
         {
             var compra = await contexto.Compras.FirstOrDefaultAsync(x => x.IdCompra == id);
             if (compra == null)
@@ -78,7 +109,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new Compra { IdCompra = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
 
     }

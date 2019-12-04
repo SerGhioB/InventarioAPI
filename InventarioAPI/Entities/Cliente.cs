@@ -19,10 +19,10 @@ namespace InventarioAPI.Entities
         [Required]
         public string Direccion { get; set; }
 
-        public virtual ICollection<Factura> Facturas { get; set; }
+        public virtual ICollection<Factura> Factura { get; set; }
 
-        public virtual ICollection<EmailCliente> EmailClientes { get; set; }
+        public virtual ICollection<EmailCliente> EmailCliente { get; set; }
 
-        public virtual ICollection<TelefonoCliente> TelefonoClientes { get; set; }
+        public virtual ICollection<TelefonoCliente> TelefonoCliente { get; set; }
     }
 }

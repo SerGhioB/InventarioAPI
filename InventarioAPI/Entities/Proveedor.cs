@@ -25,10 +25,10 @@ namespace InventarioAPI.Entities
         [Required]
         public string ContactoPrincipal { get; set; }
                 
-        public virtual ICollection<EmailProveedor> EmailProveedores { get; set; }
+        public virtual ICollection<EmailProveedor> EmailProveedor { get; set; }
 
-        public virtual ICollection<Compra> Compras { get; set; }
+        public virtual ICollection<Compra> Compra { get; set; }
 
-        public virtual ICollection<TelefonoProveedor> TelefonoProveedores { get; set; }
+        public virtual ICollection<TelefonoProveedor> TelefonoProveedor { get; set; }
     }
 }

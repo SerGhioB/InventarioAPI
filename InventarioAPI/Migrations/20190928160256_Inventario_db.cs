@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace InventarioAPI.Migrations
 {
-    public partial class Componentes_DB : Migration
+    public partial class Inventario_db : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,13 +12,13 @@ namespace InventarioAPI.Migrations
                 name: "Categoria",
                 columns: table => new
                 {
-                    CodigoCategoria = table.Column<int>(nullable: false)
+                    codigoCategoria = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Descripcion = table.Column<string>(nullable: false)
+                    descripcion = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categoria", x => x.CodigoCategoria);
+                    table.PrimaryKey("PK_Categoria", x => x.codigoCategoria);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,13 +56,13 @@ namespace InventarioAPI.Migrations
                 name: "TipoEmpaque",
                 columns: table => new
                 {
-                    CodigoEmpaque = table.Column<int>(nullable: false)
+                    codigoEmpaque = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Descripcion = table.Column<string>(nullable: false)
+                    descripcion = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TipoEmpaque", x => x.CodigoEmpaque);
+                    table.PrimaryKey("PK_TipoEmpaque", x => x.codigoEmpaque);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,31 +194,31 @@ namespace InventarioAPI.Migrations
                 name: "Producto",
                 columns: table => new
                 {
-                    CodigoProducto = table.Column<int>(nullable: false)
+                    codigoProducto = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CodigoCategoria = table.Column<int>(nullable: false),
-                    CodigoEmpaque = table.Column<int>(nullable: false),
-                    Descripcion = table.Column<string>(nullable: false),
-                    PrecioUnitario = table.Column<decimal>(nullable: false),
-                    PrecioPorDocena = table.Column<decimal>(nullable: false),
-                    PrecioPorMayor = table.Column<decimal>(nullable: false),
-                    Existencia = table.Column<int>(nullable: false),
-                    Imagen = table.Column<string>(nullable: false)
+                    codigoCategoria = table.Column<int>(nullable: false),
+                    codigoEmpaque = table.Column<int>(nullable: false),
+                    descripcion = table.Column<string>(nullable: false),
+                    precioUnitario = table.Column<decimal>(nullable: false),
+                    precioPorDocena = table.Column<decimal>(nullable: false),
+                    precioPorMayor = table.Column<decimal>(nullable: false),
+                    existencia = table.Column<int>(nullable: false),
+                    imagen = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Producto", x => x.CodigoProducto);
+                    table.PrimaryKey("PK_Producto", x => x.codigoProducto);
                     table.ForeignKey(
-                        name: "FK_Producto_Categoria_CodigoCategoria",
-                        column: x => x.CodigoCategoria,
+                        name: "FK_Producto_Categoria_codigoCategoria",
+                        column: x => x.codigoCategoria,
                         principalTable: "Categoria",
-                        principalColumn: "CodigoCategoria",
+                        principalColumn: "codigoCategoria",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Producto_TipoEmpaque_CodigoEmpaque",
-                        column: x => x.CodigoEmpaque,
+                        name: "FK_Producto_TipoEmpaque_codigoEmpaque",
+                        column: x => x.codigoEmpaque,
                         principalTable: "TipoEmpaque",
-                        principalColumn: "CodigoEmpaque",
+                        principalColumn: "codigoEmpaque",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -240,7 +240,7 @@ namespace InventarioAPI.Migrations
                         name: "FK_DetalleCompra_Producto_CodigoProducto",
                         column: x => x.CodigoProducto,
                         principalTable: "Producto",
-                        principalColumn: "CodigoProducto",
+                        principalColumn: "codigoProducto",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DetalleCompra_Compra_IdCompra",
@@ -269,7 +269,7 @@ namespace InventarioAPI.Migrations
                         name: "FK_DetalleFactura_Producto_CodigoProducto",
                         column: x => x.CodigoProducto,
                         principalTable: "Producto",
-                        principalColumn: "CodigoProducto",
+                        principalColumn: "codigoProducto",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DetalleFactura_Factura_NumeroFactura",
@@ -299,7 +299,7 @@ namespace InventarioAPI.Migrations
                         name: "FK_Inventario_Producto_CodigoProducto",
                         column: x => x.CodigoProducto,
                         principalTable: "Producto",
-                        principalColumn: "CodigoProducto",
+                        principalColumn: "codigoProducto",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -349,14 +349,14 @@ namespace InventarioAPI.Migrations
                 column: "CodigoProducto");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Producto_CodigoCategoria",
+                name: "IX_Producto_codigoCategoria",
                 table: "Producto",
-                column: "CodigoCategoria");
+                column: "codigoCategoria");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Producto_CodigoEmpaque",
+                name: "IX_Producto_codigoEmpaque",
                 table: "Producto",
-                column: "CodigoEmpaque");
+                column: "codigoEmpaque");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TelefonoCliente_Nit",

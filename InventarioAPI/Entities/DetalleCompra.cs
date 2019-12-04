@@ -24,7 +24,7 @@ namespace InventarioAPI.Entities
 
         public virtual Producto Producto { get; set; }
 
-        public virtual Compra Compras { get; set; }
+        public virtual Compra Compra { get; set; }
 
     }
 }
