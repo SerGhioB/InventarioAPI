@@ -30,45 +30,76 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmailProveedorDTO>>> Get()
         {
-            var emailproveedores = await contexto.EmailProveedores.ToListAsync(); //conexion a la bd y se extrae 
-            var emailproveedoresDTO = mapper.Map<List<EmailProveedorDTO>>(emailproveedores); //mapeo entre el objeto "categorias y CategoriaDTO
-            return emailproveedoresDTO;
+            var emailProveedores = await contexto.EmailProveedores.Include("Proveedor").ToListAsync(); //conexion a la bd y se extrae 
+            var emailProveedoresDTO = mapper.Map<List<EmailProveedorDTO>>(emailProveedores); //mapeo entre el objeto "categorias y CategoriaDTO
+            return emailProveedoresDTO;
+        }
+
+        [HttpGet("{numeroDePagina}", Name = "GetEmailProveedorPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<EmailProveedorPaginacionDTO>> GetEmailProveedorPage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var emailProveedorPaginacionDTO = new EmailProveedorPaginacionDTO();
+            var query = contexto.EmailProveedores.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            emailProveedorPaginacionDTO.Number = numeroDePagina;
+
+            var emailProveedores = await contexto.EmailProveedores
+                .Skip(cantidadDeRegistros * (emailProveedorPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            emailProveedorPaginacionDTO.TotalPages = totalPaginas;
+            emailProveedorPaginacionDTO.Content = mapper.Map<List<EmailProveedorDTO>>(emailProveedores);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                emailProveedorPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                emailProveedorPaginacionDTO.Last = true;
+            }
+            return emailProveedorPaginacionDTO;
         }
 
         [HttpGet("{id}", Name = "GetEmailProveedor")]
-        public async Task<ActionResult<EmailProveedorDTO>> Get(int id)
+        public async Task<ActionResult<EmailProveedorDTO>> GetEmailProveedor(int id)
         {
-            var emailproveedor = await contexto.EmailProveedores.FirstOrDefaultAsync(x => x.CodigoEmail == id);
-            if (emailproveedor == null)
+            var emailProveedor = await contexto.EmailProveedores.FirstOrDefaultAsync(x => x.CodigoEmail == id);
+            if (emailProveedor == null)
             {
                 return NotFound();
             }            
-            var emailproveedorDTO = mapper.Map<EmailProveedorDTO>(emailproveedor);
-            return emailproveedorDTO;
+            var emailProveedorDTO = mapper.Map<EmailProveedorDTO>(emailProveedor);
+            return emailProveedorDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] EmailProveedorCreacionDTO emailproveedorCreacion)
+        public async Task<ActionResult>Post([FromBody]EmailProveedorCreacionDTO emailProveedorCreacion)
         {
-            var emailproveedor = mapper.Map<EmailProveedor>(emailproveedorCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
-            contexto.Add(emailproveedor);
+            var emailProveedor = mapper.Map<EmailProveedor>(emailProveedorCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
+            contexto.Add(emailProveedor);
             await contexto.SaveChangesAsync();
-            var emailproveedorDTO = mapper.Map<EmailProveedorDTO>(emailproveedor);
-            return new CreatedAtRouteResult("GetEmailProveedor", new { id = emailproveedor.CodigoEmail }, emailproveedorDTO);
+            var emailProveedorDTO = mapper.Map<EmailProveedorDTO>(emailProveedor);
+            return new CreatedAtRouteResult("GetEmailProveedor", new { id = emailProveedor.CodigoEmail }, emailProveedorDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] EmailProveedorCreacionDTO emailproveedorActualizacion)
+        public async Task<ActionResult>Put(int id, [FromBody]EmailProveedorCreacionDTO emailProveedorActualizacion)
         {
-            var emailproveedor = mapper.Map<EmailProveedor>(emailproveedorActualizacion);
-            emailproveedor.CodigoEmail = id;
-            contexto.Entry(emailproveedor).State = EntityState.Modified;
+            var emailProveedor = mapper.Map<EmailProveedor>(emailProveedorActualizacion);
+            emailProveedor.CodigoEmail = id;
+            contexto.Entry(emailProveedor).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<EmailProveedorDTO>> Delete(int id)
+        public async Task<ActionResult<EmailProveedorDTO>>Delete(int id)
         {
             var codigoEmailProveedor = await contexto.EmailProveedores.Select(x => x.CodigoEmail).FirstOrDefaultAsync(x => x == id);
             if (codigoEmailProveedor == default(int))
@@ -77,7 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new EmailProveedor { CodigoEmail = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
 
 

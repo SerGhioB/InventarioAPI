@@ -17,8 +17,7 @@ namespace InventarioAPI.Controllers
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductoController : ControllerBase
-    {
-                
+    {                
         private readonly InventarioDBContext contexto;
         private readonly IMapper mapper;
 
@@ -31,15 +30,46 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductoDTO>>> Get()
         {
-            var producto = await contexto.Productos.Include("Categoria").Include("TipoEmpaque").ToListAsync();
-            var productosDTO = mapper.Map<List<ProductoDTO>>(producto);
+            var productos = await contexto.Productos.Include("Categoria").Include("TipoEmpaque").ToListAsync();
+            var productosDTO = mapper.Map<List<ProductoDTO>>(productos);
             return productosDTO;
         }
 
-        [HttpGet("{id}", Name = "GetProducto")]
-        public async Task<ActionResult<ProductoDTO>> Get(int id)
+        [HttpGet("{numeroDePagina}", Name = "GetProductoPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<ProductoPaginacionDTO>> GetProductoPage(int numeroDePagina = 0)
         {
-            var producto = await contexto.Productos.FirstOrDefaultAsync(x => x.codigoProducto == id);
+            int cantidadDeRegistros = 5;
+            var productoPaginacionDTO = new ProductoPaginacionDTO();
+            var query = contexto.Productos.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            productoPaginacionDTO.Number = numeroDePagina;
+
+            var productos = await contexto.Productos
+                .Skip(cantidadDeRegistros * (productoPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            productoPaginacionDTO.TotalPages = totalPaginas;
+            productoPaginacionDTO.Content = mapper.Map<List<ProductoDTO>>(productos);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                productoPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                productoPaginacionDTO.Last = true;
+            }
+            return productoPaginacionDTO;
+        }
+
+        [HttpGet("{id}", Name = "GetProducto")]
+        public async Task<ActionResult<ProductoDTO>> GetProducto(int id)
+        {
+            var producto = await contexto.Productos.FirstOrDefaultAsync(x => x.CodigoProducto == id);
             if (producto == null)
             {
                 return NotFound();
@@ -55,7 +85,29 @@ namespace InventarioAPI.Controllers
             contexto.Add(producto);
             await contexto.SaveChangesAsync();
             var productoDTO = mapper.Map<ProductoDTO>(producto);
-            return new CreatedAtRouteResult("GetProducto", new { id = producto.codigoProducto }, productoDTO);
+            return new CreatedAtRouteResult("GetProducto", new { id = producto.CodigoProducto }, productoDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult>Put(int id, [FromBody]ProductoCreacionDTO productoAcualizacion)
+        {
+            var producto = mapper.Map<Producto>(productoAcualizacion);
+            producto.CodigoProducto = id;
+            contexto.Entry(producto).State = EntityState.Modified;
+            await contexto.SaveChangesAsync();
+            return NoContent();
+        }
+
+        public async Task<ActionResult>Delete (int id)
+        {
+            var producto = await contexto.Productos.Select(x => x.CodigoProducto).FirstOrDefaultAsync(x => x == id);
+            if (producto == default(int))
+            {
+                return NotFound();
+            }
+            contexto.Remove(new Producto { CodigoProducto = id });
+            await contexto.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

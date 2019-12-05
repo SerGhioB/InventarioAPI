@@ -30,40 +30,70 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmailClienteDTO>>> Get()
         {
-            var emailclientes = await contexto.EmailClientes.ToListAsync(); //conexion a la bd y se extrae 
-            var emailclientesDTO = mapper.Map<List<EmailClienteDTO>>(emailclientes); //mapeo entre el objeto "categorias y CategoriaDTO
-            return emailclientesDTO;
+            var emailClientes = await contexto.EmailClientes.Include("Cliente").ToListAsync(); //conexion a la bd y se extrae 
+            var emailClientesDTO = mapper.Map<List<EmailClienteDTO>>(emailClientes); //mapeo entre el objeto "categorias y CategoriaDTO
+            return emailClientesDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetEmailClientePage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<EmailClientePaginacionDTO>> GetEmailClientePage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var emailClientePaginacionDTO = new EmailClientePaginacionDTO();
+            var query = contexto.EmailClientes.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            emailClientePaginacionDTO.Number = numeroDePagina;
+
+            var emailClientes = await contexto.EmailClientes
+                .Skip(cantidadDeRegistros * (emailClientePaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            emailClientePaginacionDTO.TotalPages = totalPaginas;
+            emailClientePaginacionDTO.Content = mapper.Map<List<DetalleCompraDTO>>(detalleCompras);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                emailClientePaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                emailClientePaginacionDTO.Last = true;
+            }
+            return emailClientePaginacionDTO;
+        }
 
         [HttpGet("{id}", Name = "GetEmailCliente")]
-        public async Task<ActionResult<EmailClienteDTO>> Get(int id)
+        public async Task<ActionResult<EmailClienteDTO>> GetEmailCliente(int id)
         {
-            var emailcliente = await contexto.EmailClientes.FirstOrDefaultAsync(x => x.CodigoEmail == id);
-            if (emailcliente == null)
+            var emailCliente = await contexto.EmailClientes.FirstOrDefaultAsync(x => x.CodigoEmail == id);
+            if (emailCliente == null)
             {
                 return NotFound();
             }
-            var emailclienteDTO = mapper.Map<EmailClienteDTO>(emailcliente);
-            return emailclienteDTO;
+            var emailClienteDTO = mapper.Map<EmailClienteDTO>(emailCliente);
+            return emailClienteDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] EmailClienteCreacionDTO emailclienteCreacion)
+        public async Task<ActionResult> Post([FromBody] EmailClienteCreacionDTO emailClienteCreacion)
         {
-            var emailcliente = mapper.Map<EmailCliente>(emailclienteCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
-            contexto.Add(emailcliente);
+            var emailCliente = mapper.Map<EmailCliente>(emailClienteCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
+            contexto.Add(emailCliente);
             await contexto.SaveChangesAsync();
-            var emailclienteDTO = mapper.Map<EmailClienteDTO>(emailcliente);
-            return new CreatedAtRouteResult("GetEmailCliente", new { id = emailcliente.CodigoEmail }, emailclienteDTO);
+            var emailClienteDTO = mapper.Map<EmailClienteDTO>(emailCliente);
+            return new CreatedAtRouteResult("GetEmailCliente", new { id = emailCliente.CodigoEmail }, emailClienteDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] EmailClienteCreacionDTO emailclienteActualizacion)
+        public async Task<ActionResult> Put(int id, [FromBody] EmailClienteCreacionDTO emailClienteActualizacion)
         {
-            var emailcliente = mapper.Map<EmailCliente>(emailclienteActualizacion);
-            emailcliente.CodigoEmail = id;
-            contexto.Entry(emailcliente).State = EntityState.Modified;
+            var emailCliente = mapper.Map<EmailCliente>(emailClienteActualizacion);
+            emailCliente.CodigoEmail = id;
+            contexto.Entry(emailCliente).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
         }
@@ -78,8 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new EmailCliente { CodigoEmail = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
-
     }
 }

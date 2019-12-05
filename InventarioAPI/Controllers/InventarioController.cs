@@ -35,8 +35,39 @@ namespace InventarioAPI.Controllers
             return inventariosDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetInventarioPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<InventarioPaginacionDTO>> GetInventarioPage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var inventarioPaginacionDTO = new InventarioPaginacionDTO();
+            var query = contexto.Inventarios.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            inventarioPaginacionDTO.Number = numeroDePagina;
+
+            var inventarios = await contexto.Inventarios
+                .Skip(cantidadDeRegistros * (inventarioPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            inventarioPaginacionDTO.TotalPages = totalPaginas;
+            inventarioPaginacionDTO.Content = mapper.Map<List<InventarioDTO>>(inventarios);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                inventarioPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                inventarioPaginacionDTO.Last = true;
+            }
+            return inventarioPaginacionDTO;
+        }
+
         [HttpGet("{id}", Name = "GetInventario")]
-        public async Task<ActionResult<InventarioDTO>> Get(int id)
+        public async Task<ActionResult<InventarioDTO>> GetInventario(int id)
         {
             var inventario = await contexto.Inventarios.FirstOrDefaultAsync(x => x.CodigoInventario == id);
             if (inventario == null)
@@ -58,7 +89,7 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] InventarioCreacionDTO inventarioActualizacion)
+        public async Task<ActionResult>Put(int id, [FromBody] InventarioCreacionDTO inventarioActualizacion)
         {
             var inventario = mapper.Map<Inventario>(inventarioActualizacion);
             inventario.CodigoInventario = id;
@@ -77,7 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new Inventario { CodigoInventario = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
 
     }

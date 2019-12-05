@@ -9,28 +9,28 @@ namespace InventarioAPI.Models
     public class ProductoCreacionDTO
     {
         [Required] 
-        public int codigoCategoria { get; set; }
+        public int CodigoCategoria { get; set; }
 
         [Required]
-        public int codigoEmpaque { get; set; }
+        public int CodigoEmpaque { get; set; }
 
         [Required]
-        public string descripcion { get; set; }
+        public string Descripcion { get; set; }
 
         [Required]
-        public Decimal precioUnitario { get; set; }
+        public Decimal PrecioUnitario { get; set; }
 
         [Required]
-        public Decimal precioPorDocena { get; set; }
+        public Decimal PrecioPorDocena { get; set; }
 
         [Required]
-        public Decimal precioPorMayor { get; set; }
+        public Decimal PrecioPorMayor { get; set; }
 
         [Required]
-        public int existencia { get; set; }
+        public int Existencia { get; set; }
 
         [Required]
-        public string imagen { get; set; }
+        public string Imagen { get; set; }
 
     }
 }

@@ -30,41 +30,70 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TelefonoClienteDTO>>> Get()
         {
-            var telefonoclientes = await contexto.TelefonoClientes.ToListAsync(); //conexion a la bd y se extrae 
+            var telefonoclientes = await contexto.TelefonoClientes.Include("Cliente").ToListAsync(); //conexion a la bd y se extrae 
             var telefonoclientesDTO = mapper.Map<List<TelefonoClienteDTO>>(telefonoclientes); //mapeo entre el objeto "categorias y CategoriaDTO
             return telefonoclientesDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetTelefonoClientePage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<TelefonoClientePaginacionDTO>> GetTelefonoClientePage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var telefonoClientePaginacionDTO = new TelefonoClientePaginacionDTO();
+            var query = contexto.TelefonoClientes.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            telefonoClientePaginacionDTO.Number = numeroDePagina;
+
+            var telefonoClientes = await contexto.TelefonoClientes
+                .Skip(cantidadDeRegistros * (telefonoClientePaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            telefonoClientePaginacionDTO.TotalPages = totalPaginas;
+            telefonoClientePaginacionDTO.Content = mapper.Map<List<TelefonoClienteDTO>>(telefonoClientes);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                telefonoClientePaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                telefonoClientePaginacionDTO.Last = true;
+            }
+            return telefonoClientePaginacionDTO;
+        }
 
         [HttpGet("{id}", Name = "GetTelefonoCliente")]
-        public async Task<ActionResult<TelefonoClienteDTO>> Get(int id)
+        public async Task<ActionResult<TelefonoClienteDTO>> GetTelefonoCliente(int id)
         {
-            var telefonocliente = await contexto.TelefonoClientes.FirstOrDefaultAsync(x => x.CodigoTelefono == id);
-            if (telefonocliente == null)
+            var telefonoCliente = await contexto.TelefonoClientes.FirstOrDefaultAsync(x => x.CodigoTelefono == id);
+            if (telefonoCliente == null)
             {
                 return NotFound();
             }
-            var telefonoclienteDTO = mapper.Map<TelefonoClienteDTO>(telefonocliente);
-            return telefonoclienteDTO;
-
+            var telefonoClienteDTO = mapper.Map<TelefonoClienteDTO>(telefonoCliente);
+            return telefonoClienteDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] TelefonoClienteCreacionDTO telefonoclienteCreacion)
+        public async Task<ActionResult> Post([FromBody] TelefonoClienteCreacionDTO telefonoClienteCreacion)
         {
-            var telefonocliente = mapper.Map<TelefonoCliente>(telefonoclienteCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
-            contexto.Add(telefonocliente);
+            var telefonoCliente = mapper.Map<TelefonoCliente>(telefonoClienteCreacion); //mapeo entre el objeto "categoriaCreacion y Categoria
+            contexto.Add(telefonoCliente);
             await contexto.SaveChangesAsync();
-            var telefonoclienteDTO = mapper.Map<TelefonoClienteDTO>(telefonocliente);
-            return new CreatedAtRouteResult("GetTelefonoCliente", new { id = telefonocliente.CodigoTelefono }, telefonoclienteDTO);
+            var telefonoClienteDTO = mapper.Map<TelefonoClienteDTO>(telefonoCliente);
+            return new CreatedAtRouteResult("GetTelefonoCliente", new { id = telefonoCliente.CodigoTelefono }, telefonoClienteDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] TelefonoClienteCreacionDTO telefonoclienteActualizacion)
+        public async Task<ActionResult> Put(int id, [FromBody] TelefonoClienteCreacionDTO telefonoClienteActualizacion)
         {
-            var telefonocliente = mapper.Map<TelefonoCliente>(telefonoclienteActualizacion);
-            telefonocliente.CodigoTelefono = id;
-            contexto.Entry(telefonocliente).State = EntityState.Modified;
+            var telefonoCliente = mapper.Map<TelefonoCliente>(telefonoClienteActualizacion);
+            telefonoCliente.CodigoTelefono = id;
+            contexto.Entry(telefonoCliente).State = EntityState.Modified;
             await contexto.SaveChangesAsync();
             return NoContent();
         }
@@ -79,8 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new TelefonoCliente { CodigoTelefono = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
-
     }
 }

@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Controllers
 {
-
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -31,9 +30,9 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DetalleCompraDTO>>> Get()
         {
-            var detallecompras = await contexto.DetalleCompras.Include("Compra").Include("Producto").ToListAsync();            
-            var detallecomprasDTO = mapper.Map<List<DetalleCompraDTO>>(detallecompras);
-            return detallecomprasDTO;
+            var detalleCompras = await contexto.DetalleCompras.Include("Compra").Include("Producto").ToListAsync();            
+            var detalleComprasDTO = mapper.Map<List<DetalleCompraDTO>>(detalleCompras);
+            return detalleComprasDTO;
         }
 
         [HttpGet("{numeroDePagina}", Name = "GetDetalleCompraPage")]
@@ -68,19 +67,19 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet("{id}", Name = "GetDetalleCompra")]        
-        public async Task<ActionResult<DetalleCompraDTO>> GetDetalleCompra (int id)
+        public async Task<ActionResult<DetalleCompraDTO>> GetDetalleCompra(int id)
         {
             var detalleCompra = await contexto.DetalleCompras.FirstOrDefaultAsync(x => x.IdDetalle == id);
             if(detalleCompra == null)
             {
                 return NotFound();
             }
-            var detalleCompraDTO = mapper.Map < DetalleCompraDTO>(detalleCompra);
+            var detalleCompraDTO = mapper.Map<DetalleCompraDTO>(detalleCompra);
             return detalleCompraDTO;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] DetalleCompraCreacionDTO detalleCompraCreacion)
+        public async Task<ActionResult>Post([FromBody]DetalleCompraCreacionDTO detalleCompraCreacion)
         {
             var detalleCompra = mapper.Map<DetalleCompra>(detalleCompraCreacion);
             contexto.Add(detalleCompra);
@@ -90,7 +89,7 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] DetalleCompraCreacionDTO detalleCompraActualizacion)
+        public async Task<ActionResult>Put(int id, [FromBody]DetalleCompraCreacionDTO detalleCompraActualizacion)
         {
             var detalleCompra = mapper.Map<DetalleCompra>(detalleCompraActualizacion);
             detalleCompra.IdDetalle = id;
@@ -100,7 +99,7 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<DetalleCompraDTO>> Delete(int id)
+        public async Task<ActionResult<DetalleCompraDTO>>Delete(int id)
         {
             var codigoDetalleCompra = await contexto.DetalleCompras.Select(x => x.IdDetalle).FirstOrDefaultAsync(x => x == id);
             if (codigoDetalleCompra == default(int))
@@ -111,8 +110,5 @@ namespace InventarioAPI.Controllers
             await contexto.SaveChangesAsync();
             return NoContent();
         }
-
-
-
     }
 }

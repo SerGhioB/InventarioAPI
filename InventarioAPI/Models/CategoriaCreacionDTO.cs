@@ -10,7 +10,7 @@ namespace InventarioAPI.Models
     {
                 
         [Required]
-        public string descripcion { get; set; }
+        public string Descripcion { get; set; }
 
     }
 }

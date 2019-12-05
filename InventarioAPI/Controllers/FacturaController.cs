@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Controllers
 {
-
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -26,20 +25,49 @@ namespace InventarioAPI.Controllers
         {
             this.contexto = contexto;
             this.mapper = mapper;
-
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FacturaDTO>>> Get()
         {
-            var facturas = await contexto.Facturas.ToListAsync(); //conexion a la bd y se extrae 
+            var facturas = await contexto.Facturas.Include("Cliente").ToListAsync(); //conexion a la bd y se extrae 
             var facturasDTO = mapper.Map<List<FacturaDTO>>(facturas); //mapeo entre el objeto "categorias y CategoriaDTO
             return facturasDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetFacturaPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<FacturaPaginacionDTO>> GetFacturaPage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var facturaPaginacionDTO = new FacturaPaginacionDTO();
+            var query = contexto.Facturas.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            facturaPaginacionDTO.Number = numeroDePagina;
+
+            var facturas = await contexto.Facturas
+                .Skip(cantidadDeRegistros * (facturaPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            facturaPaginacionDTO.TotalPages = totalPaginas;
+            facturaPaginacionDTO.Content = mapper.Map<List<FacturaDTO>>(facturas);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                facturaPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                facturaPaginacionDTO.Last = true;
+            }
+            return facturaPaginacionDTO;
+        }
 
         [HttpGet("{id}", Name = "GetFactura")]
-        public async Task<ActionResult<FacturaDTO>> Get(int id)
+        public async Task<ActionResult<FacturaDTO>> GetFactura(int id)
         {
             var factura = await contexto.Facturas.FirstOrDefaultAsync(x => x.NumeroFactura == id);
             if (factura == null)
@@ -48,7 +76,6 @@ namespace InventarioAPI.Controllers
             }
             var facturaDTO = mapper.Map<FacturaDTO>(factura);
             return facturaDTO;
-
         }
 
         [HttpPost]
@@ -81,8 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new Factura { NumeroFactura = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
-
     }
 }

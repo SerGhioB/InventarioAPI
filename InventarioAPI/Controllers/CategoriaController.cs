@@ -109,9 +109,6 @@ namespace InventarioAPI.Controllers
             contexto.Remove(new Categoria { CodigoCategoria = id });
             await contexto.SaveChangesAsync();
             return NoContent();
-        }
-
-
-            
+        }            
     }
 }

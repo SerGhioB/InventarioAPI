@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Controllers
 {
-
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -26,7 +25,6 @@ namespace InventarioAPI.Controllers
         {
             this.contexto = contexto;
             this.mapper = mapper;
-
         }
 
         [HttpGet]
@@ -37,9 +35,39 @@ namespace InventarioAPI.Controllers
             return proveedoresDTO;
         }
 
+        [HttpGet("{numeroDePagina}", Name = "GetProveedorPage")]
+        [Route("page/{numeroDePagina}")]
+        public async Task<ActionResult<ProveedorPaginacionDTO>> GetProveedorPage(int numeroDePagina = 0)
+        {
+            int cantidadDeRegistros = 5;
+            var proveedorPaginacionDTO = new ProveedorPaginacionDTO();
+            var query = contexto.Proveedores.AsQueryable();
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            proveedorPaginacionDTO.Number = numeroDePagina;
+
+            var proveedores = await contexto.Proveedores
+                .Skip(cantidadDeRegistros * (proveedorPaginacionDTO.Number))
+                .Take(cantidadDeRegistros)
+                .ToListAsync(); //conexion a la bd y se extrae 
+
+            proveedorPaginacionDTO.TotalPages = totalPaginas;
+            proveedorPaginacionDTO.Content = mapper.Map<List<ProveedorDTO>>(proveedores);
+            //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
+
+            if (numeroDePagina == 0)
+            {
+                proveedorPaginacionDTO.First = true;
+            }
+            else if (numeroDePagina == totalPaginas)
+            {
+                proveedorPaginacionDTO.Last = true;
+            }
+            return proveedorPaginacionDTO;
+        }
 
         [HttpGet("{id}", Name = "GetProveedor")]
-        public async Task<ActionResult<ProveedorDTO>> Get(int id)
+        public async Task<ActionResult<ProveedorDTO>> GetProveedor(int id)
         {
             var proveedor = await contexto.Proveedores.FirstOrDefaultAsync(x => x.CodigoProveedor == id);
             if (proveedor == null)
@@ -48,7 +76,6 @@ namespace InventarioAPI.Controllers
             }
             var proveedorDTO = mapper.Map<ProveedorDTO>(proveedor);
             return proveedorDTO;
-
         }
 
         [HttpPost]
@@ -81,7 +108,7 @@ namespace InventarioAPI.Controllers
             }
             contexto.Remove(new Proveedor { CodigoProveedor = id });
             await contexto.SaveChangesAsync();
-            return NotFound();
+            return NoContent();
         }
     }
 }
