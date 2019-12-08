@@ -24,5 +24,7 @@ namespace InventarioAPI.Models
 
         [Required]
         public Decimal Descuento { get; set; }
+        public FacturaDTO Factura { get; set; }
+        public ProductoDTO Producto { get; set; }
     }
 }

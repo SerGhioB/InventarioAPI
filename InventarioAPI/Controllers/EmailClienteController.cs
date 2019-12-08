@@ -52,7 +52,7 @@ namespace InventarioAPI.Controllers
                 .ToListAsync(); //conexion a la bd y se extrae 
 
             emailClientePaginacionDTO.TotalPages = totalPaginas;
-            emailClientePaginacionDTO.Content = mapper.Map<List<DetalleCompraDTO>>(detalleCompras);
+            emailClientePaginacionDTO.Content = mapper.Map<List<EmailClienteDTO>>(emailClientes);
             //var categoriasDTO = mapper.Map < List<CategoriaDTO>>(categorias); //mapeo entre el objeto "categorias y CategoriaDTO
 
             if (numeroDePagina == 0)

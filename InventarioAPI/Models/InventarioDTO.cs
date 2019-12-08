@@ -27,5 +27,6 @@ namespace InventarioAPI.Models
 
         [Required]
         public int Salidas { get; set; }
+        public ProductoDTO Producto {get; set;}
     }
 }

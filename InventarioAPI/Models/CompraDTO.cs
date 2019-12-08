@@ -21,5 +21,6 @@ namespace InventarioAPI.Models
 
         [Required]
         public Decimal Total { get; set; }
+        public ProveedorDTO Proveedor { get; set; }
     }
 }

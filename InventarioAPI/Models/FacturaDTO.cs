@@ -18,5 +18,6 @@ namespace InventarioAPI.Models
 
         [Required]
         public Decimal Total { get; set; }
+        public ClienteDTO Cliente { get; set; }
     }
 }

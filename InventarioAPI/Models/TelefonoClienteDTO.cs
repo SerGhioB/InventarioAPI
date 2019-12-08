@@ -18,5 +18,6 @@ namespace InventarioAPI.Models
 
         [Required]
         public string Nit { get; set; }
+        public ClienteDTO Cliente { get; set; }
     }
 }

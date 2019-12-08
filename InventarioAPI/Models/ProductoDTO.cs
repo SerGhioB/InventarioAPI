@@ -34,7 +34,10 @@ namespace InventarioAPI.Models
 
         [Required]
         public string imagen { get; set; }
-        public Categoria categoria { get; set; }
-        public TipoEmpaque tipoEmpaque { get; set; }
+        public CategoriaDTO Categoria { get; set; }
+        public TipoEmpaqueDTO TipoEmpaque { get; set; }
+        public List<InventarioDTO> Inventarios { get; set; }
+        public List<DetalleCompraDTO> DetalleCompras { get; set; }
+        public List<DetalleFacturaDTO> DetalleFacturas { get; set; }
     }
 }

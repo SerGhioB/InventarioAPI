@@ -18,5 +18,6 @@ namespace InventarioAPI.Models
 
         [Required]
         public int CodigoProveedor { get; set; }
+        public ProveedorDTO Proveedor { get; set; }
     }
 }

@@ -42,7 +42,8 @@ namespace InventarioAPI.Controllers
             int cantidadDeRegistros = 5;
             var clientePaginacionDTO = new ClientePaginacionDTO();
             var query = contexto.Clientes.AsQueryable();
-            int totalDeRegistros = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
+            int totalDeRegistros = query.Count();
+            int totalPaginas = (int)Math.Ceiling((Double)totalDeRegistros / cantidadDeRegistros);
             clientePaginacionDTO.Number = numeroDePagina;
 
             var clientes = await contexto.Clientes
@@ -50,7 +51,7 @@ namespace InventarioAPI.Controllers
                 .Take(cantidadDeRegistros)
                 .ToListAsync();
 
-            clientePaginacionDTO.TotalPages = totalDeRegistros;
+            clientePaginacionDTO.TotalPages = totalPaginas;
             clientePaginacionDTO.Content = mapper.Map<List<ClienteDTO>>(clientes);
 
             if (numeroDePagina == 0)
