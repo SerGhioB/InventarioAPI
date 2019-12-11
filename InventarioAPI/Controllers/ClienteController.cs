@@ -36,7 +36,7 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet("{numeroDePagina}", Name = "GetClientePage")]
-        [Route("{page/numeroDePagina}")]
+        [Route("page/{numeroDePagina}")]
         public async Task<ActionResult<ClientePaginacionDTO>> GetClientePage(int  numeroDePagina = 0)
         {
             int cantidadDeRegistros = 5;
